@@ -31,7 +31,7 @@ focus() {
 
 # get current active keyboard layout
 kblayout() {
-    echo $(xkblayout-state print "%n" | cut -c -2)
+    echo $(xkblayout-state print "%n" | cut -c -2 | tr '[:upper:]' '[:lower:]')
 }
 
 # function to combine all of the modules
@@ -39,7 +39,7 @@ compose_bar() {
     while true; do
 	    out="%{l O15}$(tags)"
 	    out="$out%{c}$(focus)"
-        out="$out%{r}$(kblayout)"
+        out="$out%{r}$(kblayout)%{O5}"
         out="$out$(battery)%{O15}"
 	    echo $out
         sleep 0.1s
