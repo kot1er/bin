@@ -1,0 +1,56 @@
+#!/bin/sh
+
+
+# --- modules --- #
+
+# window manager tags
+tags() {
+    active=""
+    normal=""
+    t=$(wmctrl -d | awk '{print $2;}' | \
+    	sed -e 's/*/'"$active"'/g' -e 's/-/'"$normal"'/g')
+
+    out=""
+    index=1
+    for tag in $t; do
+        out="$out%{A:herbstclient use $index:}$tag%{A} "
+        index=$((index+1))
+    done
+    echo $out
+}
+
+# battery percentage
+battery() {
+	echo $(acpi -b | awk '{ print $NF; }')
+}
+
+# focused window command name
+focus() {
+	echo $(ps -p $(xdotool getwindowfocus getwindowpid) -o comm=)
+}
+
+# function to combine all of the modules
+compose_bar() {
+    while true; do
+	    out="%{l O15}$(tags)"
+	    out="$out%{c}$(focus)"
+	    out="$out%{r}$(battery)%{O15}"
+	    echo $out
+        sleep 0.1s
+    done
+}
+
+
+# --- bar config --- #
+
+font="mononoki Nerd Font"
+geometry="1920x30+0+0"
+bgcolor="#33352a"
+fgcolor="#b0b28e"
+
+compose_bar | lemonbar -p	\
+        -f "$font"		\
+        -g "$geometry"		\
+        -B "$bgcolor"		\
+        -F "$fgcolor"		\
+        | sh
